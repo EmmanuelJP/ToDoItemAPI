@@ -3,3 +3,8 @@
 ################################################################################
 
 /TodoItem2.Services/bin/Debug/netcoreapp3.1
+/TodoItem2.Services/obj
+/TodoItem2.Model/bin/Debug/netcoreapp3.1
+/TodoItem2.Model/obj
+/ToDoItem2/obj
+/ToDoItem2/bin/Debug/netcoreapp3.1
