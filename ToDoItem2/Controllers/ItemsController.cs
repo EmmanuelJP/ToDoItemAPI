@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,11 +10,13 @@ using System.Threading.Tasks;
 using TodoItem2.Model.Entities;
 using TodoItem2.Services.Repositories;
 using ToDoItem2.Dtos;
+using ToDoItem2.Models;
 
 namespace ToDoItem2.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ItemsController : ControllerBase
     {
         private readonly ILogger<ItemsController> _logger;
@@ -47,6 +50,7 @@ namespace ToDoItem2.Controllers
             return Ok(itemDto);
         }
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult Create(ItemDto itemDto)
         {
             var validationResult = _validator.Validate(itemDto);
@@ -71,6 +75,7 @@ namespace ToDoItem2.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
+        [Authorize(Policy = Policies.Admin)]
         public IActionResult Delete(int id)
         {
             var item = _itemRepository.GetById(id);
