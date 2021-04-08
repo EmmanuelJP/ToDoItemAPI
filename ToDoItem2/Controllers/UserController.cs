@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TodoItem2.Services;
@@ -7,7 +8,7 @@ using ToDoItem2.Models;
 namespace ToDoItem2.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -19,6 +20,7 @@ namespace ToDoItem2.Controllers
         [HttpGet]
         [Route("GetUserData")]
         [Authorize(Policy = Policies.User)]
+        [EnableQuery]
         public IActionResult GetUserData()
         {
             return Ok("This is a response from user method");

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ using ToDoItem2.Models;
 namespace ToDoItem2.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [Authorize]
     public class ItemsController : ControllerBase
     {
@@ -33,12 +34,14 @@ namespace ToDoItem2.Controllers
         }
 
         [HttpGet]
+        [EnableQuery]
         public IActionResult GetAll()
         {
             var items = _itemRepository.GetAll();
             var itemDtos = _mapper.Map<IEnumerable<ItemDto>>(items);
             return Ok(itemDtos);
         }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {

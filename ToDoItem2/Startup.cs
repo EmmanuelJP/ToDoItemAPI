@@ -1,5 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
 using Microsoft.OpenApi.Models;
+using OData.Swagger.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +42,8 @@ namespace ToDoItem2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options => options.EnableEndpointRouting = false);
+            services.AddOData();
             services.AddDbContext<ItemContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
@@ -69,7 +74,7 @@ namespace ToDoItem2
                     }
                 });
             });
-
+            services.AddOdataSwaggerSupport();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
@@ -118,9 +123,14 @@ namespace ToDoItem2
             app.UseAuthentication();
             app.UseAuthorization();
 
+            var builder = new ODataConventionModelBuilder(app.ApplicationServices);
+            builder.EntitySet<ItemDto>("Items");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.EnableDependencyInjection();
+                endpoints.Expand().Select().Filter().OrderBy().MaxTop(100).Count();
+                endpoints.MapODataRoute("odata", "api", builder.GetEdmModel());
             });
         }
     }
