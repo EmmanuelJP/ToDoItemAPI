@@ -5,28 +5,23 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OData.Edm;
 using Microsoft.OpenApi.Models;
 using OData.Swagger.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TodoItem2.Model;
+using TodoItem2.Model.Repositories;
 using TodoItem2.Services;
-using TodoItem2.Services.Repositories;
-using ToDoItem2.Dtos;
+using TodoItem2.Services.Items;
+using ToDoItem2.BL.Dtos;
+using ToDoItem2.BL.Validators;
 using ToDoItem2.Models;
-using ToDoItem2.Validators;
 
 namespace ToDoItem2
 {
@@ -48,9 +43,10 @@ namespace ToDoItem2
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddTransient<IItemRepository, ItemRepository>();
+            services.AddTransient<IItemService, ItemService>();
             services.AddTransient<IUserService, UserService>();
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<ItemDto>, ItemValidator>();
             services.AddSwaggerGen(c =>

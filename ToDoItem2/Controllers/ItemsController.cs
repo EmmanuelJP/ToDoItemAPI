@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoItem2.Model.Entities;
-using TodoItem2.Services.Repositories;
-using ToDoItem2.Dtos;
+using TodoItem2.Services.Items;
+using ToDoItem2.BL.Dtos;
 using ToDoItem2.Models;
 
 namespace ToDoItem2.Controllers
@@ -20,60 +20,46 @@ namespace ToDoItem2.Controllers
     [Authorize]
     public class ItemsController : ControllerBase
     {
-        private readonly ILogger<ItemsController> _logger;
-        private readonly IItemRepository _itemRepository;
-        private readonly IMapper _mapper;
-        private readonly IValidator<ItemDto> _validator;
+        private readonly IItemService _itemService;
 
-        public ItemsController(ILogger<ItemsController> logger, IItemRepository itemRepository, IMapper mapper, IValidator<ItemDto> validator)
+        public ItemsController(IItemService itemService)
         {
-            _logger = logger;
-            _itemRepository = itemRepository;
-            _mapper = mapper;
-            _validator = validator;
+            _itemService = itemService;
         }
 
         [HttpGet]
         [EnableQuery]
         public IActionResult GetAll()
         {
-            var items = _itemRepository.GetAll();
-            var itemDtos = _mapper.Map<IEnumerable<ItemDto>>(items);
-            return Ok(itemDtos);
+            var items = _itemService.GetAll();
+            return Ok(items);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var item = _itemRepository.GetById(id);
+            var item = _itemService.GetById(id);
             if (item is null)
                 return NotFound();
 
-            var itemDto = _mapper.Map<ItemDto>(item);
-            return Ok(itemDto);
+            return Ok(item);
         }
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Create(ItemDto itemDto)
+        public IActionResult Create(ItemDto item)
         {
-            var validationResult = _validator.Validate(itemDto);
-            if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors); 
+            var itemResult = _itemService.Create(item);
+            if (!itemResult.IsValid)
+                return BadRequest(itemResult.Errors); 
 
-            var item = _mapper.Map<Item>(itemDto);
-            var itemDtoResult = _itemRepository.Create(item);
-            return Created("",itemDtoResult);
+            return Created("", itemResult.Entity);
         }
         [HttpPut("{id}")]
-        public IActionResult Update([FromRoute]int id,[FromBody] ItemDto itemDto)
+        public IActionResult Update([FromRoute]int id,[FromBody] ItemDto item)
         {
-            var item = _itemRepository.GetById(id);
-            if (item is null)
-                return NotFound();
-
-            _mapper.Map(itemDto, item);
-
-             _itemRepository.Update(item);
+            var itemResult = _itemService.Update(id, item);
+            if (!itemResult.IsValid)
+                return BadRequest(itemResult.Errors);
 
             return NoContent();
         }
@@ -81,12 +67,10 @@ namespace ToDoItem2.Controllers
         [Authorize(Policy = Policies.Admin)]
         public IActionResult Delete(int id)
         {
-            var item = _itemRepository.GetById(id);
-            if (item is null)
-                return NotFound();
-            var itemResult = _itemRepository.Delete(id);
-            var itemDto = _mapper.Map<ItemDto>(itemResult);
-            return Ok(itemDto);
+            var itemResult = _itemService.Delete(id);
+            if (!itemResult.IsValid)
+                return BadRequest(itemResult.Errors);
+            return Ok(itemResult.Entity);
         }
     }
 }

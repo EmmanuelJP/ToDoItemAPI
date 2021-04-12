@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using TodoItem2.Model;
 using TodoItem2.Model.Entities;
 
-namespace TodoItem2.Services.Repositories
+namespace TodoItem2.Model.Repositories
 {
     public class ItemRepository : IItemRepository
     {

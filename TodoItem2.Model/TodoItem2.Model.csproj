@@ -13,4 +13,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TodoItem2.Core\TodoItem2.Core.csproj" />
+  </ItemGroup>
+
 </Project>

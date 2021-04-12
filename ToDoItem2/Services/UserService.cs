@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using ToDoItem2.Dtos;
+using ToDoItem2.BL.Dtos;
 
 namespace TodoItem2.Services
 {

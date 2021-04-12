@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TodoItem2.Model.Entities;
-using ToDoItem2.Dtos;
+using ToDoItem2.BL.Dtos;
 
-namespace ToDoItem2.Mapper
+namespace ToDoItem2.BL.Mapper
 {
     public class ToDoItemProfile : Profile
     {

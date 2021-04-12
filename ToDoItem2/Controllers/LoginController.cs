@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TodoItem2.Services;
-using ToDoItem2.Dtos;
+using ToDoItem2.BL.Dtos;
 
 namespace ToDoItem2.Controllers
 {
