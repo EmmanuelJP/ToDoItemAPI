@@ -5,7 +5,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using TodoItem2.Core.Settings;
 using ToDoItem2.BL.Dtos;
 
 namespace TodoItem2.Services
@@ -22,10 +24,10 @@ namespace TodoItem2.Services
             new UserDto { FullName = "Vaibhav Bhapkar", UserName = "admin", Password = "1234", UserRole = "Admin" },
             new UserDto { FullName = "Test User", UserName = "user", Password = "1234", UserRole = "User" }
             };
-        private readonly IConfiguration _configuration;
-        public UserService(IConfiguration configuration)
+        private readonly JwtSettings _jwtSettings;
+        public UserService(IOptions<JwtSettings> option)
         {
-            _configuration = configuration;
+            _jwtSettings = option.Value;
         }
 
         public UserDto AuthenticateUser(UserDto loginCredentials)
@@ -36,7 +38,7 @@ namespace TodoItem2.Services
 
         public string GenerateJWTToken(UserDto userInfo)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
@@ -46,8 +48,8 @@ namespace TodoItem2.Services
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: credentials

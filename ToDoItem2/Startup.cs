@@ -15,6 +15,7 @@ using OData.Swagger.Services;
 using System;
 using System.Linq;
 using System.Text;
+using TodoItem2.Core.Settings;
 using TodoItem2.Model;
 using TodoItem2.Model.Repositories;
 using TodoItem2.Services;
@@ -37,6 +38,9 @@ namespace ToDoItem2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
             services.AddControllers(options => options.EnableEndpointRouting = false);
             services.AddOData();
             services.AddDbContext<ItemContext>(options => {
